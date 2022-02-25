@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.01)
+cmake_minimum_required(VERSION 3.1)
 
 
 
@@ -9,6 +9,9 @@ cmake_minimum_required(VERSION 3.01)
 project(lzma VERSION 19.0
                   DESCRIPTION "Cross-platform decompiler for scenes.image file."
                   LANGUAGES C)
+
+
+              option(MULTITHREADED "Set this to on if you want multithreaded compression algorythm. (Community supplied in POSIX systems.)" off)
 
 
 
@@ -28,13 +31,41 @@ set(SOURCES
     "include/LzmaLib.h"
     "include/7zTypes.h")
 
+
+if (MULTITHREADED)
+    find_package(Threads)
+
+    set(SOURCES ${SOURCES}
+        "include/LzFindMt.h"
+
+        "src/LzFindMt.c" #this one uses external interface to use threads, defined in Threads.h
+    )
+
+    if(CMAKE_USE_WIN32_THREADS_INIT) #implies WIN32
+
+        set(SOURCES ${SOURCES}
+            "src/win/Threads.c"
+
+            "include/win/Threads.h")
+    elseif(CMAKE_USE_PTHREADS_INIT)
+
+        set(SOURCES ${SOURCES}
+
+
+            "include/posix/Threads.h"
+            "include/posix/event_objects_posix.h"
+            "src/posix/Threads.c"
+            "src/posix/event_objects_posix.c")
+    endif()
+
+
+endif()
+
+
+
 if(WIN32)
     set(SOURCES ${SOURCES}
-        "src/win/LzFindMt.c"
         "src/win/LzmaLibExports.c"
-        "src/win/Threads.c"
-        "include/win/LzFindMt.h"
-        "include/win/Threads.h"
         "src/win/LzmaLib.def"
         "src/win/resource.rc")
 endif()
@@ -56,9 +87,22 @@ target_include_directories(lzma PUBLIC
     "${PROJECT_SOURCE_DIR}/include/")
 
 
-if(WIN32)
-    target_include_directories(lzma PUBLIC
-        "${PROJECT_SOURCE_DIR}/include/win")
+
+
+if(MULTITHREADED)
+
+    if(CMAKE_USE_WIN32_THREADS_INIT) #implies WIN32
+
+        target_include_directories(lzma PUBLIC
+            "${PROJECT_SOURCE_DIR}/include/win/")
+    elseif(CMAKE_USE_PTHREADS_INIT)
+
+        target_include_directories(lzma PUBLIC
+            "${PROJECT_SOURCE_DIR}/include/posix/")
+    endif()
+
 endif()
+
+
 
 
