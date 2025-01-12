@@ -3,7 +3,7 @@
 
 #include "Precomp.h"
 
-#include "../../7zWindows.h"
+#include "7zWindows.h"
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)

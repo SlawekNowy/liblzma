@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.01)
 
 #TODO: stop if we use vs2015 or older
 
-project(lzma VERSION 19.0
+project(lzma VERSION 24.09
                   DESCRIPTION "Cross-platform decompiler for scenes.image file."
                   LANGUAGES C)
 
@@ -21,33 +21,36 @@ set(SOURCES
     "src/LzmaDec.c"
     "src/LzmaEnc.c"
     "src/LzmaLib.c"
+    "src/Threads.c"
     "include/Alloc.h"
     "include/LzFind.h"
     "include/LzmaDec.h"
     "include/LzmaEnc.h"
     "include/LzmaLib.h"
-    "include/7zTypes.h")
+    "include/7zTypes.h"
+    "include/Threads.h"
+
+set(SOURCES_WIN
+    "src/win/LzmaLibExports.c"
+    "src/win/LzmaLib.def"
+    "src/win/resource.rc")
+
+# Dodaj źródło do pliku wykonywalnego tego projektu.
 
 if(WIN32)
-    set(SOURCES ${SOURCES}
-        "src/win/LzFindMt.c"
-        "src/win/LzmaLibExports.c"
-        "src/win/Threads.c"
-        "include/win/LzFindMt.h"
-        "include/win/Threads.h"
-        "src/win/LzmaLib.def"
-        "src/win/resource.rc")
+add_library (lzma_s STATIC ${SOURCES})
+add_library (lzma SHARED ${SOURCES} ${SOURCES_WIN})
+else()
+add_library (lzma_s STATIC ${SOURCES})
+add_library (lzma SHARED ${SOURCES})
 endif()
-# Dodaj źródło do pliku wykonywalnego tego projektu.
-add_library (lzma STATIC ${SOURCES})
 
-
-if (NOT MSVC)
-    set (CFLAGS " -c -O2 -Wall -fPIC")
-    target_compile_definitions(lzma PUBLIC _7ZIP_ST)
-elseif(MINGW)
-    set (CFLAGS " -c -O2 -Wall")
-endif()
+#if (NOT MSVC)
+    #set (CFLAGS " -c -O2 -Wall -fPIC")
+ #   target_compile_definitions(lzma_s PUBLIC _7ZIP_ST)
+#elseif(MINGW)
+    #set (CFLAGS " -c -O2 -Wall")
+#endif()
 
 target_precompile_headers(lzma PUBLIC "include/Precomp.h")
 
