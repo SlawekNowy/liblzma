@@ -28,7 +28,7 @@ set(SOURCES
     "include/LzmaEnc.h"
     "include/LzmaLib.h"
     "include/7zTypes.h"
-    "include/Threads.h"
+    "include/Threads.h")
 
 set(SOURCES_WIN
     "src/win/LzmaLibExports.c"
