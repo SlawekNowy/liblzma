@@ -35,14 +35,21 @@ set(SOURCES_WIN
     "src/win/LzmaLib.def"
     "src/win/resource.rc")
 
+#Some generators do not like final libraries using only object libraries. This exists just to shut them up.
+set(SOURCE_DUMMY 
+    src/LzmaDummy.c)
+
 # Dodaj źródło do pliku wykonywalnego tego projektu.
 
+add_library (lzma_common OBJECT ${SOURCES})
+set_property(TARGET lzma_common PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 if(WIN32)
-add_library (lzma_s STATIC ${SOURCES})
-add_library (lzma SHARED ${SOURCES} ${SOURCES_WIN})
+add_library (lzma_s STATIC $<TARGET_OBJECTS:lzma_common> ${SOURCE_DUMMY})
+add_library (lzma SHARED $<TARGET_OBJECTS:lzma_common> ${SOURCES_WIN})
 else()
-add_library (lzma_s STATIC ${SOURCES})
-add_library (lzma SHARED ${SOURCES})
+add_library (lzma_s STATIC $<TARGET_OBJECTS:lzma_common> ${SOURCE_DUMMY})
+add_library (lzma SHARED $<TARGET_OBJECTS:lzma_common> ${SOURCE_DUMMY})
 endif()
 
 #if (NOT MSVC)
@@ -52,10 +59,10 @@ endif()
     #set (CFLAGS " -c -O2 -Wall")
 #endif()
 
-target_precompile_headers(lzma PUBLIC "include/Precomp.h")
+target_precompile_headers(lzma_common PUBLIC "include/Precomp.h")
 
 
-target_include_directories(lzma PUBLIC
+target_include_directories(lzma_common PUBLIC
     "${PROJECT_SOURCE_DIR}/include/")
 
 
