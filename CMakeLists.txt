@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.01)
+cmake_minimum_required(VERSION 3.10)
 
 
 
@@ -11,7 +11,7 @@ project(lzma VERSION 24.09
                   LANGUAGES C)
 
 
-
+#Only select archs have hand-written assembly.
 
 
 
@@ -40,9 +40,10 @@ set(SOURCE_DUMMY
     src/LzmaDummy.c)
 
 # Dodaj źródło do pliku wykonywalnego tego projektu.
-
+set(CMAKE_C_VISIBILITY_PRESET hidden)
 add_library (lzma_common OBJECT ${SOURCES})
 set_property(TARGET lzma_common PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 
 if(WIN32)
 add_library (lzma_s STATIC $<TARGET_OBJECTS:lzma_common> ${SOURCE_DUMMY})

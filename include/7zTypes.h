@@ -45,6 +45,29 @@ EXTERN_C_BEGIN
 typedef int SRes;
 
 
+
+// from https://atomheartother.github.io/c++/2018/07/12/CPPDynLib.html
+// modified macro name.
+// Define EXPORTED for any platform
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef LZMA_BUILD
+    // Exporting...
+    #define LZMA_DLLEXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+  #else
+    #define LZMA_DLLEXPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+  #endif
+  #define LZMA_NOEXPORT
+#else
+  #if __GNUC__ >= 4
+    #define LZMA_DLLEXPORT __attribute__ ((visibility ("default")))
+    #define LZMA_NOEXPORT  __attribute__ ((visibility ("hidden")))
+  #else
+    #define LZMA_DLLEXPORT
+    #define LZMA_NOEXPORT
+  #endif
+#endif
+
+
 #ifdef _MSC_VER
   #if _MSC_VER > 1200
     #define MY_ALIGN(n) __declspec(align(n))

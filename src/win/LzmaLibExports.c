@@ -2,11 +2,12 @@
 2023-03-05 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
+#include "7zTypes.h"
 
 #include "7zWindows.h"
 
-BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
-BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
+LZMA_DLLEXPORT BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
+LZMA_DLLEXPORT BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
   UNUSED_VAR(hInstance)
   UNUSED_VAR(dwReason)
